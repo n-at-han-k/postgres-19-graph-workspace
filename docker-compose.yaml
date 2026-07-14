@@ -1,0 +1,34 @@
+# PostgreSQL 19 Beta 1 — with native SQL/PGQ property-graph queries (SQL:2023 Part 16).
+# 19beta1 was released 2026-06-04; final 19.0 is expected ~Sept 2026.
+#
+#   docker compose up -d          # start
+#   docker compose logs -f        # watch init
+#   docker compose down           # stop  (keeps data volume)
+#   docker compose down -v        # stop  (wipes data + re-runs init/ scripts)
+#
+services:
+  postgres:
+    image: postgres:19beta1
+    container_name: pg19-graph
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: graph
+      POSTGRES_PASSWORD: graphpass
+      POSTGRES_DB: graphlab
+      # Keep the beta's data dir separate from any host defaults.
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist the cluster across restarts.
+      - pg19_data:/var/lib/postgresql/data
+      # Any *.sql / *.sh here runs once, on first init (empty data volume only).
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U graph -d graphlab"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pg19_data:
