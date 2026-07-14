@@ -29,14 +29,15 @@ services:
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
       # - /var/run/docker.sock:/var/run/docker.sock
 
-    hostname: devcontainer
+    # Share the postgres container's network namespace, so the DB is reachable at
+    # localhost:5432 from inside the devcontainer (same as on the host).
+    # (network_mode is incompatible with `hostname`.)
+    network_mode: "service:postgres"
 
     environment:
       NIX_MULTI_USER: "true"
       NIX_REMOTE: "daemon"
       VSCODE_SERVER_CUSTOM_GLIBC_LINKER: "true"
-      # Reach the sibling postgres service (../docker-compose.yaml) by service name.
-      PGHOST: "postgres"
 
     # Start the postgres stack together with the devcontainer (same compose project).
     depends_on:
