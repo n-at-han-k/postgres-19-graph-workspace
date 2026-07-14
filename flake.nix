@@ -14,15 +14,17 @@
           packages = [ pkgs.postgresql_17 ];
 
           # Matches docker-compose.yaml / .env — so a bare `psql` just connects.
-          PGHOST = "localhost";
-          PGPORT = "5432";
-          PGUSER = "graph";
-          PGPASSWORD = "graphpass";
-          PGDATABASE = "graphlab";
-
+          # Use `:-` defaults so an externally-set value wins: on the host PGHOST
+          # is localhost, but inside the devcontainer it's `postgres` (the sibling
+          # compose service), set in .devcontainer/docker-compose.yml.
           shellHook = ''
+            export PGHOST="''${PGHOST:-localhost}"
+            export PGPORT="''${PGPORT:-5432}"
+            export PGUSER="''${PGUSER:-graph}"
+            export PGPASSWORD="''${PGPASSWORD:-graphpass}"
+            export PGDATABASE="''${PGDATABASE:-graphlab}"
             echo "psql $(psql --version | awk '{print $3}') — connect with: psql"
-            echo "  (targets postgres://graph@localhost:5432/graphlab)"
+            echo "  (targets postgres://$PGUSER@$PGHOST:$PGPORT/$PGDATABASE)"
           '';
         };
       });

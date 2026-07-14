@@ -7,6 +7,7 @@
 	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
 	// The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
 	"dockerComposeFile": [
+		"../docker-compose.yaml",
 		"docker-compose.yml"
 	],
 
@@ -25,8 +26,8 @@
 		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
 	},
 
-	// Use 'forwardPorts' to make a list of qqports inside the container available locally.
-	// "forwardPorts": [],
+	// Expose Postgres to the host (DBCode / a host psql).
+	"forwardPorts": [5432],
 
 	// Uncomment the next line if you want start specific services in your Docker Compose config.
 	// "runServices": [],
@@ -44,6 +45,7 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
+				"dbcode.dbcode",
 				"arrterian.nix-env-selector",
 				"bbenoist.Nix",
 				"jnoortheen.nix-ide",

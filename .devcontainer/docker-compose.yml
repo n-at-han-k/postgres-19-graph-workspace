@@ -22,8 +22,8 @@ services:
       dockerfile: Dockerfile
     privileged: true
     volumes:
-      # Update this to wherever you want VS Code to mount the folder of your project
-      - ../../:/workspaces:cached
+      # Mount this project at the workspaceFolder path set in devcontainer.json.
+      - ..:/workspaces/postgres-19-graph-workspace:cached
       - ./nix.conf:/etc/nix/nix.conf
 
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
@@ -35,6 +35,12 @@ services:
       NIX_MULTI_USER: "true"
       NIX_REMOTE: "daemon"
       VSCODE_SERVER_CUSTOM_GLIBC_LINKER: "true"
+      # Reach the sibling postgres service (../docker-compose.yaml) by service name.
+      PGHOST: "postgres"
+
+    # Start the postgres stack together with the devcontainer (same compose project).
+    depends_on:
+      - postgres
 
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
     # cap_add:
