@@ -17,14 +17,17 @@ services:
     # array). The sample below assumes your primary file is in the root of your project.
     #
     # image: ghcr.io/lucernae/devcontainer-nix:v1
+    # NOTE: relative paths here resolve against the PRIMARY compose file's dir,
+    # which is the repo root (../docker-compose.yaml is first in dockerComposeFile).
+    # So everything is written relative to the repo root, not this file.
     build:
-      context: .
+      context: ./.devcontainer
       dockerfile: Dockerfile
     privileged: true
     volumes:
-      # Mount this project at the workspaceFolder path set in devcontainer.json.
-      - ..:/workspaces/postgres-19-graph-workspace:cached
-      - ./nix.conf:/etc/nix/nix.conf
+      # Mount the repo root at the workspaceFolder path set in devcontainer.json.
+      - .:/workspaces/postgres-19-graph-workspace:cached
+      - ./.devcontainer/nix.conf:/etc/nix/nix.conf
 
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
       # - /var/run/docker.sock:/var/run/docker.sock
