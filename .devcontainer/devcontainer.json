@@ -1,0 +1,38 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.238.1/containers/docker-existing-docker-compose
+// Based on lucernae/devcontainer-nix .devcontainer/development (Docker-in-Docker variant).
+{
+	"name": "Postgres 19 Graph — Nix Devcontainer",
+
+	"dockerComposeFile": [
+		"docker-compose.yml"
+	],
+
+	"overrideCommand": false,
+
+	// The service in .devcontainer/docker-compose.yml that VS Code attaches to.
+	"service": "devcontainer",
+
+	// Where the repo is mounted inside the container (see docker-compose.yml).
+	"workspaceFolder": "/workspace",
+
+	// Expose Postgres to the host so DBCode / a host psql can reach it.
+	"forwardPorts": [5432],
+
+	// Auto-allow direnv and build the flake env so terminals open with psql on PATH.
+	"postCreateCommand": "bash -c \"direnv allow /workspace; direnv exec /workspace sleep 1\"",
+
+	// The non-root user created in the base image.
+	"remoteUser": "vscode",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"arrterian.nix-env-selector",
+				"bbenoist.Nix",
+				"jnoortheen.nix-ide",
+				"brettm12345.nixfmt-vscode"
+			]
+		}
+	}
+}

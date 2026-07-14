@@ -1,0 +1,34 @@
+version: '3'
+services:
+  devcontainer:
+    # Build the local Dockerfile, which extends the devcontainer-nix base image
+    # with docker/docker-compose CLI wrappers (see Dockerfile + devcontainer-overrides).
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - IMAGE_TAG=latest
+    privileged: true
+    volumes:
+      # Mount the repo root (one level up from .devcontainer) at /workspace.
+      - ../:/workspace:cached
+      # Docker-from-docker: share the host docker socket so `docker compose up`
+      # (for postgres) works from inside the devcontainer.
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    hostname: devcontainer
+
+    # Publish Postgres started via the repo's own docker-compose.yaml.
+    ports:
+      - "5432:5432"
+
+    environment:
+      NIX_MULTI_USER: "true"
+      NIX_REMOTE: "daemon"
+      VSCODE_SERVER_CUSTOM_GLIBC_LINKER: "true"
+
+    # Override the base entrypoint to fix docker socket ownership + enable buildx,
+    # then delegate to the base image's entrypoint (which starts nix-daemon and
+    # activates direnv against /workspace).
+    entrypoint: /home/vscode/entrypoint-overrides.sh /workspace
+    command: /bin/bash -c "while sleep 1000; do :; done"
