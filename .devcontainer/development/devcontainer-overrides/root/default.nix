@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
   '';
   meta = {
     priority = "4";
-    description = "docker/docker-compose CLI wrappers for the devcontainer";
+    description = "VS Code devcontainer with Nix";
     maintainers = [ "Rizky Maulana Nugraha <lana.pcfre@gmail.com>" ];
   };
 }

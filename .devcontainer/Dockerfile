@@ -1,26 +1,19 @@
-ARG IMAGE_TAG=main
-FROM ghcr.io/lucernae/devcontainer-nix:${IMAGE_TAG}
+FROM ghcr.io/lucernae/devcontainer-nix:flake---latest
 
-# See https://aka.ms/vscode-remote/containers/non-root-user
-ARG USERNAME=vscode
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-ARG USER_HOME_DIR=/home/${USERNAME}
+ENV USE_DIRENV="true"
+ENV USE_FLAKE="true"
+ENV INSTALL_ROOT_PACKAGES=""
+ENV PREBUILD_DEFAULT_PACKAGE="default.nix"
+ENV PREBUILD_NIX_SHELL="shell.nix"
+ENV PREBUILD_FLAKE=""
+ENV PREBUILD_FLAKE_RUN=""
+ENV PREBUILD_FLAKE_DEVELOP=""
+ENV ADDITIONAL_NIX_CHANNEL=""
+ENV ADDITIONAL_NIX_FLAKE_REGISTRY=""
+ENV PREBUILD_HOME_MANAGER=""
+ENV PREBUILD_HOME_MANAGER_FLAKE=""
 
-USER root
+COPY ./nix.conf /etc/nix/nix.conf
+COPY library-scripts /library-scripts
 
-# Preload docker/docker-compose CLI wrappers into root's nix profile at build time,
-# rather than at container runtime.
-ADD devcontainer-overrides/root /root/devcontainer-overrides
-RUN nix-env -if /root/devcontainer-overrides
-
-ADD entrypoint-overrides.sh ${USER_HOME_DIR}/entrypoint-overrides.sh
-RUN chmod +x ${USER_HOME_DIR}/entrypoint-overrides.sh \
-    && chmod +x ${USER_HOME_DIR}/entrypoint.sh \
-    && chmod u+s $(readlink -f $(command -v sudo)) \
-    && chown ${USERNAME}:${USERNAME} /nix/store
-
-# VS-Code patch so that devcontainer detects available shells
-RUN echo "/nix/var/nix/profiles/default/bin/bash" >> /etc/shells \
-    && echo "/nix/var/nix/profiles/default/bin/zsh" >> /etc/shells \
-    && echo "/nix/var/nix/profiles/default/bin/nix-shell" >> /etc/shells
+RUN bash /library-scripts/build/all.sh
