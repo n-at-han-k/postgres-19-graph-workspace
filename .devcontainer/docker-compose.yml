@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - IMAGE_TAG=latest
+        - IMAGE_TAG=main
     privileged: true
     volumes:
       # Mount the repo root (one level up from .devcontainer) at /workspace.

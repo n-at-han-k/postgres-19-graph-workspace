@@ -1,4 +1,4 @@
-ARG IMAGE_TAG=latest
+ARG IMAGE_TAG=main
 FROM ghcr.io/lucernae/devcontainer-nix:${IMAGE_TAG}
 
 # See https://aka.ms/vscode-remote/containers/non-root-user
